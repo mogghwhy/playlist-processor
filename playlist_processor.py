@@ -25,7 +25,7 @@ def list_audio_codecs(metadata):
         print(f"{audio['codecs']} @ {audio['bitrate']}bps")
 
 def decode_init_segment_bash(init_segment, output_filename):
-    return f"echo '{init_segment}' | base64 --decode > {output_filename}"
+    return f"echo -n '{init_segment}' | base64 --decode > {output_filename}"
 
 def parse_segment_url(segment_url):
     parsed = urlparse(f"https://dummy.com/{segment_url}")
