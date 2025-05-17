@@ -25,7 +25,7 @@ def list_audio_codecs(metadata):
         print(f"{audio['codecs']} @ {audio['bitrate']}bps")
 
 def decode_init_segment_bash(init_segment, output_filename):
-    return f"echo -n '{init_segment}' | base64 --decode > {output_filename}"
+    return f"echo -n '{init_segment}' | base64 --decode > '{output_filename}'"
 
 def parse_segment_url(segment_url):
     parsed = urlparse(f"https://dummy.com/{segment_url}")
@@ -70,7 +70,7 @@ def generate_curl_command(
 
     header_str = " \\\n".join(f"-H '{k}: {v}'" for k, v in headers.items())
     output_file = os.path.join(output_dir, f"segment_{seq:04}.mp4")
-    curl_cmd = f"curl '{url}' \\\n{header_str} -o {output_file}"
+    curl_cmd = f"curl '{url}' \\\n{header_str} -o '{output_file}'"
     return curl_cmd
 
 def generate_segment_commands(base_url, index_segment, segments, exp, acl, hmac, file_path_prefix, output_dir, referer, user_agent, origin):
@@ -118,10 +118,11 @@ def main():
     parser.add_argument("--file", default="playlist-playlist.json")
     parser.add_argument("--output", default="output.sh")
     parser.add_argument("--config", default="config.json")
-    parser.add_argument("--output-dir", default="segments")
-    parser.add_argument("--ffmpeg-video-list", default="segments/video_ffmpeg.txt")
-    parser.add_argument("--ffmpeg-audio-list", default="segments/audio_ffmpeg.txt")
-
+    parser.add_argument("--output-dir", default="segments")    
+    args = parser.parse_args()
+    ensure_output_dir(args.output_dir)
+    parser.add_argument("--ffmpeg-video-list", default=f"{args.output_dir}/video_ffmpeg.txt")
+    parser.add_argument("--ffmpeg-audio-list", default=f"{args.output_dir}/audio_ffmpeg.txt")
     args = parser.parse_args()
 
     config = load_config(args.config)
@@ -136,7 +137,7 @@ def main():
     acl = f"%2F{metadata['clip_id']}%2F%2A"
     file_path_prefix = f"{metadata['clip_id']}{config['file_path_postfix']}"
 
-    ensure_output_dir(args.output_dir)
+    
 
     if args.option == 1:
         list_video_sizes(metadata)
