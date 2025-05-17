@@ -155,11 +155,14 @@ def main():
         width, height = map(int, args.video_size.lower().split("x"))
         for video in metadata.get("video", []):
             if video["width"] == width and video["height"] == height:
+                init_filename = os.path.join(args.output_dir, f"{video['id']}_init.mp4")
                 bash_lines.append("# Decode init_segment")
-                bash_lines.append(decode_init_segment_bash(video["init_segment"], os.path.join(args.output_dir, f"{video['id']}_init.mp4")))
+                bash_lines.append(decode_init_segment_bash(video["init_segment"], init_filename))
                 bash_lines.append("")
-                cmd_lines, file_list = generate_segment_commands(base_url, video["index_segment"], video["segments"], exp, acl, hmac, file_path_prefix, args.output_dir, referer, user_agent, origin)
+                file_list.append(init_filename)
+                cmd_lines, segment_files = generate_segment_commands(base_url, video["index_segment"], video["segments"], exp, acl, hmac, file_path_prefix, args.output_dir, referer, user_agent, origin)
                 bash_lines += cmd_lines
+                file_list += segment_files
                 break
         else:
             print("Video size not found.")
@@ -171,11 +174,14 @@ def main():
             return
         for audio in metadata.get("audio", []):
             if audio["codecs"] == args.codec and str(audio["bitrate"]) == args.bitrate:
+                init_filename = os.path.join(args.output_dir, f"{audio['id']}_init.mp4")
                 bash_lines.append("# Decode init_segment")
-                bash_lines.append(decode_init_segment_bash(audio["init_segment"], os.path.join(args.output_dir, f"{audio['id']}_init.mp4")))
+                bash_lines.append(decode_init_segment_bash(audio["init_segment"], init_filename))
                 bash_lines.append("")
-                cmd_lines, file_list = generate_segment_commands(base_url, audio["index_segment"], audio["segments"], exp, acl, hmac, file_path_prefix, args.output_dir, referer, user_agent, origin)
+                file_list.append(init_filename)
+                cmd_lines, segment_files = generate_segment_commands(base_url, audio["index_segment"], audio["segments"], exp, acl, hmac, file_path_prefix, args.output_dir, referer, user_agent, origin)
                 bash_lines += cmd_lines
+                file_list += segment_files
                 break
         else:
             print("Audio stream not found.")
