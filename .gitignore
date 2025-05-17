@@ -1,1 +1,4 @@
 config.json
+*.sh
+segments/
+*.json
