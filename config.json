@@ -1,0 +1,9 @@
+{
+  "base_url": "https://baseurl.co",
+  "exp": "1747542875",
+  "hmac": "esdjskdjs191892a9s9d8s9d9s8d9",
+  "referer": "https://referref.co",
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+  "origin": "https://origin.io",
+  "file_path_postfix": "/postfix/"
+}
