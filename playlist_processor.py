@@ -119,7 +119,8 @@ def main():
     parser.add_argument("--output", default="output.sh")
     parser.add_argument("--config", default="config.json")
     parser.add_argument("--output-dir", default="segments")
-    parser.add_argument("--ffmpeg-list", default="segments/ffmpeg.txt")
+    parser.add_argument("--ffmpeg-video-list", default="segments/video_ffmpeg.txt")
+    parser.add_argument("--ffmpeg-audio-list", default="segments/audio_ffmpeg.txt")
 
     args = parser.parse_args()
 
@@ -163,6 +164,7 @@ def main():
                 cmd_lines, segment_files = generate_segment_commands(base_url, video["index_segment"], video["segments"], exp, acl, hmac, file_path_prefix, args.output_dir, referer, user_agent, origin)
                 bash_lines += cmd_lines
                 file_list += segment_files
+                write_ffmpeg_list(file_list, args.ffmpeg_video_list)
                 break
         else:
             print("Video size not found.")
@@ -182,15 +184,19 @@ def main():
                 cmd_lines, segment_files = generate_segment_commands(base_url, audio["index_segment"], audio["segments"], exp, acl, hmac, file_path_prefix, args.output_dir, referer, user_agent, origin)
                 bash_lines += cmd_lines
                 file_list += segment_files
+                write_ffmpeg_list(file_list, args.ffmpeg_audio_list)
                 break
         else:
             print("Audio stream not found.")
             return
+
     if args.option == 2 or args.option == 4:
         write_bash_script(bash_lines, args.output)
-        write_ffmpeg_list(file_list, args.ffmpeg_list)
         print(f"Bash script written to {args.output}")
-        print(f"FFmpeg concat list written to {args.ffmpeg_list}")
+        if args.option == 2:
+            print(f"FFmpeg video concat list written to {args.ffmpeg_video_list}")
+        if args.option == 4:
+            print(f"FFmpeg audio concat list written to {args.ffmpeg_audio_list}")
 
 if __name__ == "__main__":
     main()
